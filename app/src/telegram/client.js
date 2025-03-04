@@ -3,18 +3,21 @@ import { StringSession } from "telegram/sessions";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
-import { config } from "../../config/config.js";
+import { Config } from "../../config/config.js";
 
 const SESSION_FILE = "session.json";
 
 export const getClient = async (loginMethod) => {
-  let session = "";
+  let session = fs.existsSync(SESSION_FILE) ? fs.readFileSync(SESSION_FILE, "utf-8") : "";
 
-  if (fs.existsSync(SESSION_FILE)) {
-    session = fs.readFileSync(SESSION_FILE, "utf-8");
+  const { TELEGRAM_APP_ID, TELEGRAM_APP_HASH } = Config;
+
+  if (!TELEGRAM_APP_ID || !TELEGRAM_APP_HASH) {
+    console.error("Error: TELEGRAM_APP_ID or TELEGRAM_APP_HASH is not set in config.");
+    process.exit(1);
   }
 
-  const client = new TelegramClient(new StringSession(session), config.apiId, config.apiHash, {
+  const client = new TelegramClient(new StringSession(session), TELEGRAM_APP_ID, TELEGRAM_APP_HASH, {
     connectionRetries: 5,
   });
 
@@ -32,13 +35,18 @@ export const getClient = async (loginMethod) => {
       await client.connect();
 
       const qrLogin = await client.qrLogin();
+      if (!qrLogin || !qrLogin.url) {
+        console.error("Failed to generate QR Code.");
+        process.exit(1);
+      }
+
       qrcode.generate(qrLogin.url, { small: true });
       console.log("Scan this QR Code with your Telegram app.");
 
       await qrLogin.wait();
       console.log("Successfully logged in using QR Code.");
     } else {
-      console.log("Invalid login method.");
+      console.error("Invalid login method.");
       process.exit(1);
     }
 
@@ -46,7 +54,8 @@ export const getClient = async (loginMethod) => {
       fs.writeFileSync(SESSION_FILE, client.session.save());
       console.log("Session successfully saved.");
     } else {
-      console.log("Failed to save session. Client is not connected.");
+      console.error("Failed to save session. Client is not connected.");
+      process.exit(1);
     }
 
     return client;
