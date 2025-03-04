@@ -9,12 +9,8 @@ const SESSION_FILE = "session.json";
 
 export const getClient = async (loginMethod) => {
   let session = "";
-  try {
-    if (await fs.pathExists(SESSION_FILE)) {
-      session = await fs.readFile(SESSION_FILE, "utf-8");
-    }
-  } catch (err) {
-    console.error("Error reading session file:", err);
+  if (await fs.pathExists(SESSION_FILE)) {
+    session = await fs.readFile(SESSION_FILE, "utf-8");
   }
 
   const { TELEGRAM_APP_ID, TELEGRAM_APP_HASH } = Config;
@@ -28,6 +24,8 @@ export const getClient = async (loginMethod) => {
     connectionRetries: 5,
   });
 
+  await client.connect(); 
+
   try {
     if (loginMethod === "api") {
       console.log("\nLogging in with API ID & API Hash...");
@@ -39,18 +37,13 @@ export const getClient = async (loginMethod) => {
       });
     } else if (loginMethod === "qr") {
       console.log("\nGenerating QR Code for login...");
-      await client.connect();
+      
+      const auth = await client.qrLogin();
+      qrcode.generate(auth.url, { small: true });
 
-      const qrLogin = await client.qrLogin();
-      if (!qrLogin || !qrLogin.url) {
-        console.error("Failed to generate QR Code.");
-        process.exit(1);
-      }
-
-      qrcode.generate(qrLogin.url, { small: true });
       console.log("Scan this QR Code with your Telegram app.");
+      await auth.wait(); 
 
-      await qrLogin.wait(); // Tunggu hingga user login
       console.log("Successfully logged in using QR Code.");
     } else {
       console.error("Invalid login method.");
@@ -58,13 +51,8 @@ export const getClient = async (loginMethod) => {
     }
 
     if (client.connected) {
-      try {
-        await fs.writeFile(SESSION_FILE, client.session.save());
-        console.log("Session successfully saved.");
-      } catch (err) {
-        console.error("Failed to save session:", err);
-        process.exit(1);
-      }
+      await fs.writeFile(SESSION_FILE, client.session.save());
+      console.log("Session successfully saved.");
     } else {
       console.error("Failed to save session. Client is not connected.");
       process.exit(1);
