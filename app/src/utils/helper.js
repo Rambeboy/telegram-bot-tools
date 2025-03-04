@@ -1,11 +1,4 @@
-import readline from "readline";
-import promptSync from "prompt-sync";
-
-const prompt = promptSync();
-const clearLine = () => {
-  readline.cursorTo(process.stdout, 0);
-  readline.clearLine(process.stdout, 0);
-};
+import readlineSync from "readline-sync";
 
 export const showLoginMenu = () => {
   console.log("\n=== LOGIN OPTIONS ===\n");
@@ -13,8 +6,8 @@ export const showLoginMenu = () => {
   console.log("2. Login with QR Code");
   console.log("3. Exit");
 
-  process.stdout.write("\nChoose login method (1/2/3) : ");
-  const choice = prompt(""); 
+  // Menampilkan teks sebelum input
+  const choice = readlineSync.question("\nChoose login method (1/2/3): ");
 
   if (choice === "3") {
     console.log("Exiting...");
