@@ -3,7 +3,7 @@ import { StringSession } from "telegram/sessions/index.js";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
-import { Config } from "../../../config/config.js";
+import { Config } from "../../config/config.js";
 
 const SESSION_FILE = "session.json";
 
