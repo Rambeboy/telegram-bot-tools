@@ -1,6 +1,6 @@
 import promptSync from "prompt-sync";
 
-const prompt = promptSync({ sigint: true });
+const prompt = promptSync({ sigint: true }); // Menghindari crash saat Ctrl+C
 
 export const showLoginMenu = () => {
   console.log("\n=== LOGIN OPTIONS ===\n");
@@ -8,9 +8,9 @@ export const showLoginMenu = () => {
   console.log("2. Login with QR Code");
   console.log("3. Exit");
 
-  // Gunakan process.stdout.write agar teks tidak terhapus saat mengetik
+  // Menampilkan teks tanpa pindah baris
   process.stdout.write("\nChoose login method (1/2/3): ");
-  const choice = prompt({ echo: "" }); // Memastikan teks tidak hilang saat mengetik
+  const choice = prompt(); // Tidak menggunakan { echo: "" } agar input terlihat
 
   if (choice === "3") {
     console.log("Exiting...");
