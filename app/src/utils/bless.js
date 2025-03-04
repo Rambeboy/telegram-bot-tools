@@ -12,7 +12,6 @@ export const showToolsMenu = async (client) => {
     console.log("2. Auto join Channel based on keyword");
     console.log("3. Exit Channel or Group");
     console.log("4. Logout & Exit");
-
     const choice = prompt("\nEnter your choice (1/2/3/4) : ");
 
     if (choice === "1") {
