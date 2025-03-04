@@ -34,7 +34,7 @@ This is a Telegram bot tool built with Node.js that allows you to:
 
 1. Clone the Repository
    ```bash
-   git clone https://github.com/yourusername/telegram-bot-tools.git && cd telegram-bot-tools
+   git clone https://github.com/Rambeboy/telegram-bot-tools.git && cd telegram-bot-tools
    ```
 
 2. Install Dependencies
