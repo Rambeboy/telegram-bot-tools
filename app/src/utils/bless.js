@@ -17,7 +17,12 @@ export const showToolsMenu = async (client) => {
     const choice = prompt("Enter your choice (1/2/3/4) : ").trim();
 
     if (choice === "1") {
-      await getChats(client);
+      console.log("DEBUG: getChats function is being called...");
+      const chats = await getChats(client);
+      console.log("DEBUG: getChats function finished executing.");
+    if (chats.length === 0) {
+    console.log("No channels or groups found.");
+    }
     } else if (choice === "2") {
       const keyword = prompt("Enter the Channel Search Keyword : ").trim();
       await joinChannels(client, keyword);
