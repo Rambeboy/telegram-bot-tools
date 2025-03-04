@@ -7,7 +7,7 @@ const CACHE_FILE = path.join("cache", "chats.json");
 export const getChats = async (client) => {
   console.log(chalk.green("\nFetching Channel and Group list..."));
   if (await fs.pathExists(CACHE_FILE)) {
-    console.log("Loading chats from cache...");
+    console.log(chalk.green("Loading chats from cache..."));
     return await fs.readJson(CACHE_FILE);
   }
 
