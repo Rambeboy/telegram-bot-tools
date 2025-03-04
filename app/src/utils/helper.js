@@ -10,7 +10,7 @@ export const showLoginMenu = () => {
 
   // Menampilkan teks tanpa pindah baris
   process.stdout.write("\nChoose login method (1/2/3): ");
-  const choice = prompt().trim();; // Tidak menggunakan { echo: "" } agar input terlihat
+  const choice = prompt().trim(); // Tidak menggunakan { echo: "" } agar input terlihat
 
   if (choice === "3") {
     console.log("Exiting...");
