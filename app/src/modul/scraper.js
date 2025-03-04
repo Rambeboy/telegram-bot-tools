@@ -4,15 +4,24 @@ import { Api } from "telegram";
 import chalk from "chalk";
 
 const CACHE_FILE = path.join("cache", "chats.json");
+
 export const getChats = async (client) => {
   console.log(chalk.green("\nFetching Channel and Group list..."));
+
   if (await fs.pathExists(CACHE_FILE)) {
-    console.log(chalk.green("Loading chats from cache..."));
+    console.log(chalk.blue("Loading chats from cache..."));
     return await fs.readJson(CACHE_FILE);
   }
 
   try {
+    if (!client || !client.connected) {
+      console.error(chalk.red("Error: Client is not connected."));
+      return [];
+    }
+
     const dialogs = await client.getDialogs();
+    console.log(chalk.green(`Retrieved ${dialogs.length} dialogs.`));
+
     const chats = dialogs
       .map((dialog) => dialog.entity)
       .filter((chat) => chat?.className === "Channel" || chat?.className === "Chat")
@@ -24,7 +33,7 @@ export const getChats = async (client) => {
       }));
 
     if (chats.length === 0) {
-      console.log(chalk.red("No Channels or Groups found."));
+      console.log(chalk.yellow("No Channels or Groups found."));
       return [];
     }
 
@@ -32,13 +41,16 @@ export const getChats = async (client) => {
     await fs.writeJson(CACHE_FILE, chats, { spaces: 2 });
     console.log(chalk.yellow("Chats cached successfully!"));
 
+    console.log(chalk.magenta("\n=== Your Channels & Groups ==="));
     chats.forEach((chat, index) => {
-      console.log(`${index + 1}. ${chat.title} (ID: ${chat.id})`);
+      console.log(
+        `${index + 1}. ${chat.title} (ID: ${chat.id}) ${chat.access_hash ? "" : chalk.red("[Missing access_hash]")}`
+      );
     });
 
     return chats;
   } catch (error) {
-    console.error(chalk.red("Error fetching chats :", error.message));
+    console.error(chalk.red("Error fetching chats: "), error.message);
     return [];
   }
 };
