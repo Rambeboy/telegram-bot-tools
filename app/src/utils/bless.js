@@ -1,16 +1,11 @@
-import promptSync from "prompt-sync";
-import { getChats } from "../modul/scraper.js";
-import { joinChannels } from "../modul/joiner.js";
-import { leaveChannels } from "../modul/leaver.js";
-
-const prompt = promptSync();
+import { Api } from "telegram";
 
 export const showToolsMenu = async (client) => {
   while (true) {
     console.log("\n=== TELEGRAM TOOLS MENU ===\n");
     console.log("1. View Channel & Group list");
-    console.log("2. Auto join Channel based on keyword");
-    console.log("3. Exit Channel or Group");
+    console.log("2. Auto join Channel Based on Keyword");
+    console.log("3. Exit Channel or Groups");
     console.log("4. Logout & Exit");
     const choice = prompt("\nEnter your choice (1/2/3/4) : ");
 
@@ -25,7 +20,7 @@ export const showToolsMenu = async (client) => {
     } else if (choice === "4") {
       if (client.connected) {
         console.log("Logging out...");
-        await client.logout();  
+        await client.invoke(new Api.auth.LogOut()); 
         console.log("Logged out successfully!");
       } else {
         console.log("Client is not connected. Cannot log out.");
