@@ -41,16 +41,16 @@ export const getClient = async (loginMethod) => {
       console.log("\nGenerating QR Code for login...");
       await client.connect();
 
-      const { token } = await client.generateQrCode();
-      if (!token) {
+      const qrLogin = await client.qrLogin();
+      if (!qrLogin || !qrLogin.url) {
         console.error("Failed to generate QR Code.");
         process.exit(1);
       }
 
-      qrcode.generate(token, { small: true });
+      qrcode.generate(qrLogin.url, { small: true });
       console.log("Scan this QR Code with your Telegram app.");
 
-      await client.signInUserWithQrCode(token);
+      await qrLogin.wait(); // Tunggu hingga user login
       console.log("Successfully logged in using QR Code.");
     } else {
       console.error("Invalid login method.");
