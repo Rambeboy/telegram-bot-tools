@@ -1,0 +1,33 @@
+{
+  "name": "telegram-bot-tools",
+  "version": "1.0.0",
+  "description": "A Telegram bot tool for managing Channels and groups",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node scripts/start.js",
+    "setup": "node scripts/setup.js",
+    "build": "rm -rf app && javascript-obfuscator --config build-config.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "readline-sync": "^1.4.10",
+    "telegram": "^2.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "automation",
+    "telegram-client",
+    "telegram-bot"
+  ],
+  "author": "Nofan Rambe",
+  "license": "MIT"
+}

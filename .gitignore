@@ -1,0 +1,31 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-lock.yaml
+package-lock.json
+
+# Environment & Config
+.env
+config/config.js
+
+# Compiled files
+dist/
+build/
+*.tsbuildinfo
+
+# Sessions & Cache
+session.json
+sessions/
+.cache/
+*.log
+
+# VS Code & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
