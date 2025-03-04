@@ -17,15 +17,19 @@ export const showToolsMenu = async (client) => {
     if (choice === "1") {
       await getChats(client);
     } else if (choice === "2") {
-      const keyword = prompt("Enter the channel search keyword : ");
+      const keyword = prompt("Enter the Channel search keyword : ");
       await joinChannels(client, keyword);
     } else if (choice === "3") {
       const chats = await getChats(client);
       await leaveChannels(client, chats);
     } else if (choice === "4") {
-      console.log("Logging out...");
-      await client.logOut();
-      console.log("Logged out successfully!");
+      if (client.connected) {
+        console.log("Logging out...");
+        await client.logout();  
+        console.log("Logged out successfully!");
+      } else {
+        console.log("Client is not connected. Cannot log out.");
+      }
       break;
     } else {
       console.log("Invalid selection. Please choose a valid option.");
