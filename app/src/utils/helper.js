@@ -1,4 +1,6 @@
-import readlineSync from "readline-sync";
+import promptSync from "prompt-sync";
+
+const prompt = promptSync({ sigint: true }); // Agar tidak error saat Ctrl+C
 
 export const showLoginMenu = () => {
   console.log("\n=== LOGIN OPTIONS ===\n");
@@ -6,8 +8,9 @@ export const showLoginMenu = () => {
   console.log("2. Login with QR Code");
   console.log("3. Exit");
 
-  // Menampilkan teks sebelum input
-  const choice = readlineSync.question("\nChoose login method (1/2/3): ");
+  // Memastikan teks terlihat sebelum input
+  process.stdout.write("\nChoose login method (1/2/3): ");
+  const choice = prompt(""); // Membaca input tanpa pindah baris
 
   if (choice === "3") {
     console.log("Exiting...");
