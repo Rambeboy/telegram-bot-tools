@@ -1,5 +1,5 @@
 import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions/index.js"; 
+import { StringSession } from "telegram/sessions/index.js";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
@@ -38,19 +38,14 @@ export const getClient = async (loginMethod) => {
         onError: (err) => console.error("Error:", err),
       });
     } else if (loginMethod === "qr") {
-      console.log("\nLogging in with QR Code...");
+      console.log("\nGenerating QR Code for login...");
       await client.connect();
 
-      const qrLogin = await client.qrLogin();
-      if (!qrLogin || !qrLogin.url) {
-        console.error("Failed to generate QR Code.");
-        process.exit(1);
-      }
+      const { token } = await client.sendCode();
+      qrcode.generate(token, { small: true });
 
-      qrcode.generate(qrLogin.url, { small: true });
-      console.log("Scan this QR Code with your Telegram app.");
-
-      await qrLogin.wait();
+      console.log("Scan the QR Code with your Telegram app.");
+      await client.signInUserWithQrCode(token);
       console.log("Successfully logged in using QR Code.");
     } else {
       console.error("Invalid login method.");
