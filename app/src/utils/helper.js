@@ -3,7 +3,7 @@ import promptSync from "prompt-sync";
 const prompt = promptSync({ sigint: true });
 
 export const showLoginMenu = () => {
-  console.log("\n======== LOGIN OPTIONS ========");
+  console.log("\n======== LOGIN OPTIONS ========\n");
   console.log("1. Login with API ID & API Hash");
   console.log("2. Login with QR Code");
   console.log("3. Exit");
