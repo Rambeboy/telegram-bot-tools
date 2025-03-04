@@ -1,4 +1,17 @@
+import readline from "readline";
+import promptSync from "prompt-sync";
+import { getChats } from "../modul/scraper.js";
+import { joinChannels } from "../modul/joiner.js";
+import { leaveChannels } from "../modul/leaver.js";
 import { Api } from "telegram";
+
+const prompt = promptSync();
+
+// Fungsi untuk menghapus baris sebelumnya agar teks tidak turun ke bawah
+const clearLine = () => {
+  readline.cursorTo(process.stdout, 0);
+  readline.clearLine(process.stdout, 0);
+};
 
 export const showToolsMenu = async (client) => {
   while (true) {
@@ -7,12 +20,16 @@ export const showToolsMenu = async (client) => {
     console.log("2. Auto join Channel Based on Keyword");
     console.log("3. Exit Channel or Groups");
     console.log("4. Logout & Exit");
-    const choice = prompt("\nEnter your choice (1/2/3/4) : ");
+    process.stdout.write("\nEnter your choice (1/2/3/4) : ");
+    clearLine(); 
+    const choice = prompt("");  
 
     if (choice === "1") {
       await getChats(client);
     } else if (choice === "2") {
-      const keyword = prompt("Enter the Channel search keyword : ");
+      process.stdout.write("Enter the Channel Search Keyword : ");
+      clearLine();
+      const keyword = prompt("");
       await joinChannels(client, keyword);
     } else if (choice === "3") {
       const chats = await getChats(client);
