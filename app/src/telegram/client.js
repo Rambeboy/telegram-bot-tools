@@ -1,6 +1,6 @@
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
-import { Api } from "telegram/tl";
+import { Api } from "telegram/tl/api.js";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
