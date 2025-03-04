@@ -1,7 +1,9 @@
-import readline from "readline-sync";
+import promptSync from "prompt-sync";
 import { getChats } from "../modul/scraper.js";
 import { joinChannels } from "../modul/joiner.js";
 import { leaveChannels } from "../modul/leaver.js";
+
+const prompt = promptSync();
 
 export const showToolsMenu = async (client) => {
   while (true) {
@@ -11,12 +13,12 @@ export const showToolsMenu = async (client) => {
     console.log("3. Exit Channel or Group");
     console.log("4. Logout & Exit");
 
-    const choice = readline.question("🔹 Enter your choice (1/2/3/4) : ");
+    const choice = prompt("🔹 Enter your choice (1/2/3/4) : ");
 
     if (choice === "1") {
       await getChats(client);
     } else if (choice === "2") {
-      const keyword = readline.question("Enter the channel search keyword : ");
+      const keyword = prompt("Enter the channel search keyword : ");
       await joinChannels(client, keyword);
     } else if (choice === "3") {
       const chats = await getChats(client);
