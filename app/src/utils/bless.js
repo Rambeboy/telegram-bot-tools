@@ -8,11 +8,12 @@ const prompt = promptSync({ sigint: true });
 
 export const showToolsMenu = async (client) => {
   while (true) {
-    console.log("\n=== TELEGRAM TOOLS MENU ===");
+    console.log("\n===== TELEGRAM TOOLS MENU =====\n");
     console.log("1. View Channel & Group list");
     console.log("2. Auto join Channel Based on Keyword");
     console.log("3. Exit Channel or Groups");
     console.log("4. Logout & Exit");
+    console.log();
     const choice = prompt("Enter your choice (1/2/3/4) : ").trim();
 
     if (choice === "1") {
