@@ -2,7 +2,7 @@ import { Api } from "telegram";
 import chalk from "chalk";
 
 export const leaveChannels = async (client, chats) => {
-  console.log(chalk.green("\nLeaving selected Channels or Groups..."));
+  console.log(chalk.green("Leaving selected Channels or Groups..."));
 
   for (const chat of chats) {
     try {
