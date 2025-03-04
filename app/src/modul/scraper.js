@@ -1,8 +1,14 @@
 import { Api } from "telegram";
 
-export const getChats = async (client) => {
-  console.log("\nFetching Channel and Group list...");
+let cachedChats = null;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const getChats = async (client, forceRefresh = false) => {
+  if (!forceRefresh && cachedChats) {
+    console.log("Using cached chat list...");
+    return cachedChats;
+  }
 
+  console.log("\nFetching Channel and Group list...");
   try {
     const dialogs = await client.getDialogs();
     const chats = [];
@@ -12,6 +18,7 @@ export const getChats = async (client) => {
 
       if (entity instanceof Api.Channel || entity instanceof Api.Chat) {
         try {
+          await sleep(2000);
           const fullEntity = await client.invoke(new Api.channels.GetFullChannel({
             channel: entity,
           }));
@@ -26,6 +33,7 @@ export const getChats = async (client) => {
             access_hash: fullEntity.full_chat?.access_hash || null,
             title: entity.title || "Unknown",
           });
+
         } catch (error) {
           console.error(`Failed to get details for ${entity.title}: ${error.message}`);
         }
@@ -40,6 +48,8 @@ export const getChats = async (client) => {
     chats.forEach((chat, index) => {
       console.log(`${index + 1}. ${chat.title} (ID: ${chat.id})`);
     });
+    
+    cachedChats = chats;
 
     return chats;
   } catch (error) {
