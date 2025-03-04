@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { Api } from "telegram";
-import chalk from "chalk"
+import chalk from "chalk";
 
 const CACHE_FILE = path.join("cache", "chats.json");
 export const getChats = async (client) => {
