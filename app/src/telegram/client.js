@@ -1,6 +1,5 @@
 import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions/index.js"; 
-import { Api } from "telegram/tl/api.js";
+import { StringSession } from "telegram/sessions/index.js";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
@@ -25,9 +24,6 @@ export const getClient = async (loginMethod) => {
     process.exit(1);
   }
 
-  console.log("Using API ID:", TELEGRAM_APP_ID);
-  console.log("Using API HASH:", TELEGRAM_APP_HASH);
-
   const client = new TelegramClient(new StringSession(session), TELEGRAM_APP_ID, TELEGRAM_APP_HASH, {
     connectionRetries: 5,
   });
@@ -42,10 +38,10 @@ export const getClient = async (loginMethod) => {
         onError: (err) => console.error("Error:", err),
       });
     } else if (loginMethod === "qr") {
-      console.log("\nLogging in with QR Code...");
+      console.log("\nGenerating QR Code for login...");
       await client.connect();
 
-      const { token } = await client.qrLogin();
+      const { token } = await client.generateQrCode();
       if (!token) {
         console.error("Failed to generate QR Code.");
         process.exit(1);
