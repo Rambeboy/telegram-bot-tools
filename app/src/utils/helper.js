@@ -3,12 +3,11 @@ import promptSync from "prompt-sync";
 const prompt = promptSync();
 
 export const showLoginMenu = () => {
-  console.log("\n=== LOGIN OPTIONS ===");
+  console.log("\n=== LOGIN OPTIONS ===\n");
   console.log("1. Login with API ID & API Hash");
   console.log("2. Login with QR Code");
   console.log("3. Exit");
-
-  const choice = prompt("🔹 Choose login method (1/2/3): ");
+  const choice = prompt("\nChoose login method (1/2/3) : ");
 
   if (choice === "3") {
     console.log("Exiting...");
