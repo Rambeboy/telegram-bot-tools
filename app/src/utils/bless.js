@@ -7,13 +7,13 @@ const prompt = promptSync();
 
 export const showToolsMenu = async (client) => {
   while (true) {
-    console.log("\n=== TELEGRAM TOOLS MENU ===");
+    console.log("\n=== TELEGRAM TOOLS MENU ===\n");
     console.log("1. View Channel & Group list");
     console.log("2. Auto join Channel based on keyword");
     console.log("3. Exit Channel or Group");
     console.log("4. Logout & Exit");
 
-    const choice = prompt("🔹 Enter your choice (1/2/3/4) : ");
+    const choice = prompt("\nEnter your choice (1/2/3/4) : ");
 
     if (choice === "1") {
       await getChats(client);
