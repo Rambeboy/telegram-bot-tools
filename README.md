@@ -5,11 +5,10 @@
 ## Description
 
 This is a Telegram bot tool built with Node.js that allows you to:
-
-✅ View a list of Telegram Groups & Channels
-✅ Join channels based on a keyword
-✅ Leave groups or channels
-✅ Login using API ID & API Hash or QR Code
+- View a list of Telegram Groups & Channels
+- Join channels based on a keyword
+- Leave groups or channels
+- Login using API ID & API Hash or QR Code
 
 ---
 
