@@ -27,7 +27,6 @@ const configSrc = path.join(process.cwd(), "config");
 const configDest = path.join(process.cwd(), "app", "config");
 
 (async () => {
-  await copyFolder(accountsSrc, accountsDest);
   await copyFolder(configSrc, configDest);
 
   console.log("Starting the app...");
