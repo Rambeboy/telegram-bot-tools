@@ -12,16 +12,19 @@ export const getChats = async (client) => {
 
       if (entity instanceof Api.Channel || entity instanceof Api.Chat) {
         try {
-          const fullEntity = await client.getEntity(entity.id);
-          if (fullEntity instanceof Api.Channel && !fullEntity.access_hash) {
-            console.warn(`Skipping ${fullEntity.title} (ID: ${fullEntity.id}) due to missing access_hash.`);
+          const fullEntity = await client.invoke(new Api.channels.GetFullChannel({
+            channel: entity,
+          }));
+
+          if (fullEntity.full_chat && !fullEntity.full_chat.access_hash) {
+            console.warn(`Skipping ${entity.title} (ID: ${entity.id}) due to missing access_hash.`);
             continue;
           }
 
           chats.push({
-            id: fullEntity.id,
-            access_hash: fullEntity.access_hash || null,
-            title: fullEntity.title || "Unknown",
+            id: entity.id,
+            access_hash: fullEntity.full_chat?.access_hash || null,
+            title: entity.title || "Unknown",
           });
         } catch (error) {
           console.error(`Failed to get details for ${entity.title}: ${error.message}`);
