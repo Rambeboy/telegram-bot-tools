@@ -1,5 +1,5 @@
 import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions";
+import { StringSession } from "telegram/sessions/index.js"; 
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
@@ -8,7 +8,14 @@ import { Config } from "../../config/config.js";
 const SESSION_FILE = "session.json";
 
 export const getClient = async (loginMethod) => {
-  let session = fs.existsSync(SESSION_FILE) ? fs.readFileSync(SESSION_FILE, "utf-8") : "";
+  let session = "";
+  try {
+    if (await fs.pathExists(SESSION_FILE)) {
+      session = await fs.readFile(SESSION_FILE, "utf-8");
+    }
+  } catch (err) {
+    console.error("Error reading session file:", err);
+  }
 
   const { TELEGRAM_APP_ID, TELEGRAM_APP_HASH } = Config;
 
@@ -25,9 +32,9 @@ export const getClient = async (loginMethod) => {
     if (loginMethod === "api") {
       console.log("\nLogging in with API ID & API Hash...");
       await client.start({
-        phoneNumber: async () => await input.text("Enter your phone number (e.g., +62xxxx) : "),
-        password: async () => await input.text("Enter your two-step verification password (if any) : "),
-        phoneCode: async () => await input.text("Enter the OTP code sent to your Telegram : "),
+        phoneNumber: async () => await input.text("Enter your phone number (e.g., +62xxxx): "),
+        password: async () => await input.text("Enter your two-step verification password (if any): "),
+        phoneCode: async () => await input.text("Enter the OTP code sent to your Telegram: "),
         onError: (err) => console.error("Error:", err),
       });
     } else if (loginMethod === "qr") {
@@ -51,8 +58,13 @@ export const getClient = async (loginMethod) => {
     }
 
     if (client.connected) {
-      fs.writeFileSync(SESSION_FILE, client.session.save());
-      console.log("Session successfully saved.");
+      try {
+        await fs.writeFile(SESSION_FILE, client.session.save());
+        console.log("Session successfully saved.");
+      } catch (err) {
+        console.error("Failed to save session:", err);
+        process.exit(1);
+      }
     } else {
       console.error("Failed to save session. Client is not connected.");
       process.exit(1);
