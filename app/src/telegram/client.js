@@ -1,6 +1,6 @@
 import { TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions/index.js";
-import { Api } from "telegram/tl/index.js";
+import { StringSession } from "telegram/sessions/index.js"; 
+import { Api } from "telegram/tl/api.js";
 import fs from "fs-extra";
 import input from "input";
 import qrcode from "qrcode-terminal";
@@ -25,6 +25,9 @@ export const getClient = async (loginMethod) => {
     process.exit(1);
   }
 
+  console.log("Using API ID:", TELEGRAM_APP_ID);
+  console.log("Using API HASH:", TELEGRAM_APP_HASH);
+
   const client = new TelegramClient(new StringSession(session), TELEGRAM_APP_ID, TELEGRAM_APP_HASH, {
     connectionRetries: 5,
   });
@@ -33,23 +36,26 @@ export const getClient = async (loginMethod) => {
     if (loginMethod === "api") {
       console.log("\nLogging in with API ID & API Hash...");
       await client.start({
-        phoneNumber: async () => await input.text("Enter your phone number (e.g., +62xxxx) : "),
-        password: async () => await input.text("Enter your two-step verification password (if any) : "),
-        phoneCode: async () => await input.text("Enter the OTP code sent to your Telegram : "),
+        phoneNumber: async () => await input.text("Enter your phone number (e.g., +62xxxx): "),
+        password: async () => await input.text("Enter your two-step verification password (if any): "),
+        phoneCode: async () => await input.text("Enter the OTP code sent to your Telegram: "),
         onError: (err) => console.error("Error:", err),
       });
     } else if (loginMethod === "qr") {
-      console.log("\nGenerating QR Code for login...");
+      console.log("\nLogging in with QR Code...");
       await client.connect();
 
-      const qrCode = await client.invoke(new Api.auth.ExportLoginToken({
-        api_id: TELEGRAM_APP_ID,
-        api_hash: TELEGRAM_APP_HASH,
-        except_ids: [],
-      }));
+      const { token } = await client.qrLogin();
+      if (!token) {
+        console.error("Failed to generate QR Code.");
+        process.exit(1);
+      }
 
-      qrcode.generate(qrCode.token, { small: true });
-      console.log("Scan the QR Code with your Telegram app.");
+      qrcode.generate(token, { small: true });
+      console.log("Scan this QR Code with your Telegram app.");
+
+      await client.signInUserWithQrCode(token);
+      console.log("Successfully logged in using QR Code.");
     } else {
       console.error("Invalid login method.");
       process.exit(1);
