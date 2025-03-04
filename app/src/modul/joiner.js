@@ -1,18 +1,19 @@
 import { Api } from "telegram";
+import chalk from "chalk";
 
 export const joinChannels = async (client, keyword) => {
-  console.log(`Searching for channels with keyword: "${keyword}"...`);
+  console.log(chalk.green(`\Searching for Channels with Keyword: "${keyword}"...`));
 
   const result = await client.invoke(
     new Api.contacts.Search({ q: keyword, limit: 10 })
   );
 
   if (!result.chats.length) {
-    console.log("No channels found with the given keyword.");
+    console.log(chalk.red("No Channels found with the given Keyword."));
     return;
   }
 
-  console.log("Channels found:");
+  console.log(chalk.yellow("Channels found:"));
   result.chats.forEach((chat, index) => {
     console.log(`${index + 1}. ${chat.title} (ID: ${chat.id})`);
   });
@@ -29,9 +30,9 @@ export const joinChannels = async (client, keyword) => {
           channel: new Api.InputChannel(chat.id, chat.access_hash),
         })
       );
-      console.log(`Successfully joined ${chat.title}`);
+      console.log(chalk.yellow(`Successfully joined ${chat.title}`));
     } catch (error) {
-      console.error(`Failed to join ${chat.title}: ${error.message}`);
+      console.error(chalk.red(`Failed to join ${chat.title}: ${error.message}`));
     }
 
     await new Promise((resolve) => setTimeout(resolve, 60000));
