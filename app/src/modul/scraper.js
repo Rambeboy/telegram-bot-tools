@@ -1,7 +1,7 @@
 import { Api } from "telegram";
 
 export const getChats = async (client) => {
-  console.log("n\Fetching Channel and Group list...");
+  console.log("\nFetching Channel and Group list...");
 
   try {
     const dialogs = await client.getDialogs();
