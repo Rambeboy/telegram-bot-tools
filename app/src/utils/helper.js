@@ -7,7 +7,7 @@ export const showLoginMenu = () => {
   console.log("1. Login with API ID & API Hash");
   console.log("2. Login with QR Code");
   console.log("3. Exit");
-  const choice = prompt("\nChoose login method (1/2/3) : ").trim(); 
+  const choice = prompt("Choose login method (1/2/3) : ").trim(); 
 
   if (choice === "3") {
     console.log("Exiting...");
