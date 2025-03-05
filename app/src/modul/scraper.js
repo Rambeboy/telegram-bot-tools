@@ -8,18 +8,20 @@ const CACHE_FILE = path.join("cache", "chats.json");
 export const getChats = async (client) => {
   console.log(chalk.green("\nFetching Channel and Group list..."));
 
-  // Cek apakah ada cache
+  // Hapus cache jika perlu debugging
   if (await fs.pathExists(CACHE_FILE)) {
     console.log(chalk.green("Loading chats from cache..."));
     return await fs.readJson(CACHE_FILE);
   }
 
   try {
-    // Debugging sebelum mengambil daftar chat
-    await client.invoke(new Api.updates.GetState()); // Tambahan untuk memperbarui state
     console.log("DEBUG: Requesting dialogs from Telegram...");
     
-    const dialogs = await client.getDialogs();
+    const dialogs = [];
+    for await (const dialog of client.iterDialogs({})) {
+      dialogs.push(dialog);
+    }
+    
     console.log(`DEBUG: Retrieved ${dialogs.length} dialogs from Telegram.`);
 
     if (dialogs.length === 0) {
@@ -27,19 +29,13 @@ export const getChats = async (client) => {
       return [];
     }
 
-    // Debugging: Tampilkan semua entitas yang diterima
-    dialogs.forEach((dialog, index) => {
-      console.log(`DEBUG ${index + 1}: Type=${dialog.entity.className}, Title=${dialog.entity.title}`);
-    });
-
-    // Proses filtering
     const chats = dialogs
       .map((dialog) => dialog.entity)
       .filter((chat) => chat?.className === "Channel" || chat?.className === "Chat")
       .map((chat) => ({
         id: chat.id,
         title: chat.title || "Unknown",
-        access_hash: chat.accessHash || null,  // Jika access_hash null, maka kemungkinan gagal leave
+        access_hash: chat.access_hash ?? null,
         is_channel: chat.className === "Channel",
       }));
 
@@ -48,14 +44,12 @@ export const getChats = async (client) => {
       return [];
     }
 
-    // Simpan ke cache
     await fs.ensureDir("cache");
     await fs.writeJson(CACHE_FILE, chats, { spaces: 2 });
     console.log(chalk.yellow("Chats cached successfully!"));
 
-    // Tampilkan daftar channel/grup
     chats.forEach((chat, index) => {
-      console.log(`${index + 1}. ${chat.title} (ID: ${chat.id}, Access Hash: ${chat.access_hash})`);
+      console.log(`${index + 1}. ${chat.title.padEnd(30)} | ID: ${chat.id} | Hash: ${chat.access_hash}`);
     });
 
     console.log("DEBUG: getChats function finished executing.");
