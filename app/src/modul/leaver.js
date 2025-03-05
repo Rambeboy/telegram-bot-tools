@@ -1,35 +1,48 @@
 import fs from "fs-extra";
 import path from "path";
-import { Api } from "telegram";
 import chalk from "chalk";
+import { Api } from "telegram";
 
-const CACHE_FILE = path.join("cache", "chats.json");
+const LOGGED_OUT_FILE = path.join("cache", "logged_out.json");
 
 export const leaveChannels = async (client, chats) => {
-  console.log(chalk.yellow("\nLeaving selected Channels or Groups..."));
+  if (!chats || chats.length === 0) {
+    console.log(chalk.red("No channels or groups available to leave."));
+    return;
+  }
 
-  let updatedChats = [...chats]; 
+  console.log(chalk.yellow("\nStarting to leave channels/groups..."));
+
+  let loggedOutChats = [];
+  if (await fs.pathExists(LOGGED_OUT_FILE)) {
+    loggedOutChats = await fs.readJson(LOGGED_OUT_FILE);
+  }
 
   for (const chat of chats) {
+    if (loggedOutChats.includes(chat.id)) {
+      console.log(chalk.gray(`Skipping ${chat.title} (Already left)`));
+      continue;
+    }
+
     try {
       if (!chat.access_hash) {
-        console.warn(chalk.red(`Skipping ${chat.title} due to missing access hash.`));
+        console.log(chalk.red(`Skipping ${chat.title} (Missing access_hash)`));
         continue;
       }
 
-      await client.invoke(
-        new Api.channels.LeaveChannel({
-          channel: new Api.InputChannel(chat.id, chat.access_hash),
-        })
-      );
+      await client.invoke(new Api.channels.LeaveChannel({
+        channel: chat.id
+      }));
 
       console.log(chalk.green(`Successfully left ${chat.title}`));
-      updatedChats = updatedChats.filter((c) => c.id !== chat.id);
-      await fs.writeJson(CACHE_FILE, updatedChats, { spaces: 2 });
+
+      loggedOutChats.push(chat.id);
+      await fs.writeJson(LOGGED_OUT_FILE, loggedOutChats, { spaces: 2 });
+
     } catch (error) {
       console.error(chalk.red(`Failed to leave ${chat.title}: ${error.message}`));
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
+
+  console.log(chalk.yellow("\nFinished leaving channels/groups."));
 };
