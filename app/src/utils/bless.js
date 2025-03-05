@@ -3,43 +3,79 @@ import { getChats } from "../modul/scraper.js";
 import { joinChannels } from "../modul/joiner.js";
 import { leaveChannels } from "../modul/leaver.js";
 import { Api } from "telegram";
+import chalk from "chalk";
+import Table from "cli-table3";
 
 const prompt = promptSync({ sigint: true });
 
 export const showToolsMenu = async (client) => {
   while (true) {
-    console.log("\n===== TELEGRAM TOOLS MENU =====\n");
-    console.log("1. View Channel & Group list");
-    console.log("2. Auto join Channel Based on Keyword");
-    console.log("3. Exit Channel or Groups");
-    console.log("4. Logout & Exit");
+    console.log(chalk.blue("\n===== TELEGRAM TOOLS MENU =====\n"));
+    console.log(chalk.yellow("1. View Channel & Group List"));
+    console.log(chalk.green("2. Auto Join Channel Based on Keyword"));
+    console.log(chalk.red("3. Exit Channel or Groups"));
+    console.log(chalk.magenta("4. Logout & Exit"));
     console.log();
-    const choice = prompt("Enter your choice (1/2/3/4) : ").trim();
 
-      if (choice === "1") {
-        console.log("DEBUG: getChats function is called.");
-        const chats = await getChats(client);
-        console.log("DEBUG: getChats function returned:", chats);
+    const choice = prompt(chalk.cyan("Enter your choice (1/2/3/4): ")).trim();
+
+    if (choice === "1") {
+      console.log(chalk.green("DEBUG: getChats function is called."));
+      const chats = await getChats(client);
+
+      if (chats.length === 0) {
+        console.log(chalk.red("No Channels or Groups found."));
+        continue;
+      }
+
+      console.log(chalk.green("\n=== Channel & Group List ===\n"));
+
+      const table = new Table({
+        head: [chalk.blue("No"), chalk.blue("Title"), chalk.blue("Type"), chalk.blue("ID"), chalk.blue("Access Hash")],
+        colWidths: [5, 30, 10, 20, 20],
+      });
+
+      chats.forEach((chat, index) => {
+        table.push([
+          index + 1,
+          chat.title.length > 25 ? chat.title.slice(0, 25) + "..." : chat.title,
+          chat.is_channel ? "Channel" : "Group",
+          chat.id,
+          chat.access_hash || "N/A",
+        ]);
+      });
+
+      console.log(table.toString()); 
+
+      console.log(chalk.green("DEBUG: getChats function returned successfully."));
+
     } else if (choice === "2") {
-      const keyword = prompt("Enter the Channel Search Keyword : ").trim();
+      const keyword = prompt(chalk.cyan("Enter the Channel Search Keyword: ")).trim();
       await joinChannels(client, keyword);
+
     } else if (choice === "3") {
       const chats = await getChats(client);
+      if (chats.length === 0) {
+        console.log(chalk.red("No Channels or Groups available to leave."));
+        continue;
+      }
       await leaveChannels(client, chats);
+
     } else if (choice === "4") {
       if (client.connected) {
-        console.log("Logging out...");
+        console.log(chalk.yellow("Logging out..."));
         await client.invoke(new Api.auth.LogOut());
-        console.log("Logged out successfully!");
+        console.log(chalk.green("Logged out successfully!"));
       } else {
-        console.log("Client is not connected. Cannot log out.");
+        console.log(chalk.red("Client is not connected. Cannot log out."));
       }
       break;
+
     } else {
-      console.log("Invalid selection. Please choose a valid option.");
+      console.log(chalk.red("Invalid selection. Please choose a valid option."));
     }
   }
 
   await client.disconnect();
-  console.log("Exiting...");
+  console.log(chalk.blue("Exiting..."));
 };
