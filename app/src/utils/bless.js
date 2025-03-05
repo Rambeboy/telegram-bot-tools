@@ -10,7 +10,7 @@ const prompt = promptSync({ sigint: true });
 
 export const showToolsMenu = async (client) => {
   while (true) {
-    console.log("\n===== TELEGRAM TOOLS MENU =====\n"));
+    console.log("\n===== TELEGRAM TOOLS MENU =====\n");
     console.log("1. View Channel & Group List"));
     console.log("2. Auto Join Channel Based on Keyword"));
     console.log("3. Exit Channel or Groups"));
