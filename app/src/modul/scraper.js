@@ -8,46 +8,60 @@ const CACHE_FILE = path.join("cache", "chats.json");
 export const getChats = async (client) => {
   console.log(chalk.green("\nFetching Channel and Group list..."));
 
-  if (!client.connected) {
-    console.log(chalk.red("Client is not connected. Reconnecting..."));
-    await client.connect();
-  }
-
+  // Cek apakah ada cache
   if (await fs.pathExists(CACHE_FILE)) {
     console.log(chalk.green("Loading chats from cache..."));
     return await fs.readJson(CACHE_FILE);
   }
 
   try {
+    // Debugging sebelum mengambil daftar chat
+    await client.invoke(new Api.updates.GetState()); // Tambahan untuk memperbarui state
+    console.log("DEBUG: Requesting dialogs from Telegram...");
+    
     const dialogs = await client.getDialogs();
-    console.log(`DEBUG: Retrieved ${dialogs.length} dialogs.`);
+    console.log(`DEBUG: Retrieved ${dialogs.length} dialogs from Telegram.`);
 
+    if (dialogs.length === 0) {
+      console.log(chalk.red("No Channels or Groups found."));
+      return [];
+    }
+
+    // Debugging: Tampilkan semua entitas yang diterima
+    dialogs.forEach((dialog, index) => {
+      console.log(`DEBUG ${index + 1}: Type=${dialog.entity.className}, Title=${dialog.entity.title}`);
+    });
+
+    // Proses filtering
     const chats = dialogs
       .map((dialog) => dialog.entity)
       .filter((chat) => chat?.className === "Channel" || chat?.className === "Chat")
       .map((chat) => ({
         id: chat.id,
         title: chat.title || "Unknown",
-        access_hash: chat.accessHash || null,
+        access_hash: chat.accessHash || null,  // Jika access_hash null, maka kemungkinan gagal leave
         is_channel: chat.className === "Channel",
       }));
 
     if (chats.length === 0) {
-      console.log(chalk.red("No Channels or Groups found."));
+      console.log(chalk.red("No valid Channels or Groups found."));
       return [];
     }
 
+    // Simpan ke cache
     await fs.ensureDir("cache");
     await fs.writeJson(CACHE_FILE, chats, { spaces: 2 });
     console.log(chalk.yellow("Chats cached successfully!"));
 
+    // Tampilkan daftar channel/grup
     chats.forEach((chat, index) => {
-      console.log(`${index + 1}. ${chat.title} (ID: ${chat.id})`);
+      console.log(`${index + 1}. ${chat.title} (ID: ${chat.id}, Access Hash: ${chat.access_hash})`);
     });
 
+    console.log("DEBUG: getChats function finished executing.");
     return chats;
   } catch (error) {
-    console.error(chalk.red("Error fetching chats:", error));
+    console.error(chalk.red("Error fetching chats:", error.message));
     return [];
   }
 };
