@@ -10,11 +10,11 @@ const prompt = promptSync({ sigint: true });
 
 export const showToolsMenu = async (client) => {
   while (true) {
-    console.log(chalk.blue("\n===== TELEGRAM TOOLS MENU =====\n"));
-    console.log(chalk.yellow("1. View Channel & Group List"));
-    console.log(chalk.green("2. Auto Join Channel Based on Keyword"));
-    console.log(chalk.red("3. Exit Channel or Groups"));
-    console.log(chalk.magenta("4. Logout & Exit"));
+    console.log("\n===== TELEGRAM TOOLS MENU =====\n"));
+    console.log("1. View Channel & Group List"));
+    console.log("2. Auto Join Channel Based on Keyword"));
+    console.log("3. Exit Channel or Groups"));
+    console.log("4. Logout & Exit"));
     console.log();
 
     const choice = prompt(chalk.cyan("Enter your choice (1/2/3/4): ")).trim();
@@ -28,7 +28,7 @@ export const showToolsMenu = async (client) => {
         continue;
       }
 
-      console.log(chalk.green("\n=== Channel & Group List ===\n"));
+      console.log(chalk.green("\n===== Channel and Group List =====\n"));
 
       const table = new Table({
         head: [chalk.blue("No"), chalk.blue("Title"), chalk.blue("Type"), chalk.blue("ID"), chalk.blue("Access Hash")],
